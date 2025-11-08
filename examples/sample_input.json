@@ -1,0 +1,106 @@
+{
+  "document_id": "sample_coi_001",
+  "document_type": "certificate_of_incorporation",
+  "filename": "sample_certificate_of_incorporation.pdf",
+  "pages": 3,
+  "segments": [
+    {
+      "page": 1,
+      "segment_type": "heading",
+      "text": "CERTIFICATE OF INCORPORATION",
+      "bbox": [100, 750, 500, 780]
+    },
+    {
+      "page": 1,
+      "segment_type": "paragraph", 
+      "text": "I hereby certify that ACME TRADING PRIVATE LIMITED is this day incorporated under the Companies Act, 2013 and that the company is limited.",
+      "bbox": [50, 650, 550, 720]
+    },
+    {
+      "page": 1,
+      "segment_type": "paragraph",
+      "text": "Given under my hand and seal of office this 15th day of March, 2023.",
+      "bbox": [50, 600, 550, 630]
+    },
+    {
+      "page": 1,
+      "segment_type": "paragraph",
+      "text": "Corporate Identity Number: U51909DL2023PTC123456",
+      "bbox": [50, 550, 400, 580]
+    },
+    {
+      "page": 2,
+      "segment_type": "heading",
+      "text": "COMPANY DETAILS",
+      "bbox": [50, 750, 200, 780]
+    },
+    {
+      "page": 2,
+      "segment_type": "paragraph",
+      "text": "Company Name: ACME TRADING PRIVATE LIMITED\nCompany Type: Private Limited Company\nDate of Incorporation: 15/03/2023\nAuthorized Capital: Rs. 10,00,000/-",
+      "bbox": [50, 600, 550, 720]
+    },
+    {
+      "page": 2,
+      "segment_type": "paragraph",
+      "text": "Registered Office: 123 Business Park, Sector 18, Gurgaon, Haryana - 122015, India",
+      "bbox": [50, 550, 550, 590]
+    },
+    {
+      "page": 3,
+      "segment_type": "heading", 
+      "text": "MAIN OBJECTS OF THE COMPANY",
+      "bbox": [50, 750, 300, 780]
+    },
+    {
+      "page": 3,
+      "segment_type": "paragraph",
+      "text": "To carry on the business of trading, buying, selling, importing, exporting, manufacturing, processing, dealing in all types of chemicals, pharmaceuticals, industrial raw materials, finished goods, and allied products.",
+      "bbox": [50, 650, 550, 720]
+    },
+    {
+      "page": 3,
+      "segment_type": "paragraph",
+      "text": "To carry on business as traders, distributors, stockists, dealers, agents, brokers, commission agents, and to enter into agreements with manufacturers and suppliers.",
+      "bbox": [50, 580, 550, 630]
+    },
+    {
+      "page": 3,
+      "segment_type": "table",
+      "text": "Director Name\tDesignation\tDIN\nRahul Sharma\tManaging Director\t12345678\nPriya Patel\tDirector\t87654321\nAmit Kumar\tIndependent Director\t11223344",
+      "bbox": [50, 400, 550, 520]
+    }
+  ],
+  "processing_metadata": {
+    "ocr_confidence": 0.92,
+    "processing_time_seconds": 45.2,
+    "extraction_method": "pdfplumber_primary_pytesseract_fallback",
+    "total_text_length": 1247,
+    "tables_detected": 1
+  },
+  "test_scenarios": [
+    {
+      "scenario": "standard_coi_processing",
+      "description": "Standard Certificate of Incorporation with all required fields",
+      "expected_extractions": {
+        "company_name": "ACME TRADING PRIVATE LIMITED",
+        "cin": "U51909DL2023PTC123456", 
+        "company_type": "Private Limited Company",
+        "date_of_incorporation": "2023-03-15",
+        "authorized_capital": 1000000,
+        "registered_office": "123 Business Park, Sector 18, Gurgaon, Haryana - 122015, India"
+      }
+    },
+    {
+      "scenario": "table_extraction_test",
+      "description": "Board of directors table extraction from tabular data",
+      "expected_extractions": {
+        "board_list": [
+          {"name": "Rahul Sharma", "role": "Managing Director", "din": "12345678"},
+          {"name": "Priya Patel", "role": "Director", "din": "87654321"},
+          {"name": "Amit Kumar", "role": "Independent Director", "din": "11223344"}
+        ]
+      }
+    }
+  ]
+}
