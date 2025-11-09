@@ -18,7 +18,10 @@ from models import (
     QueryResponse,
     HealthResponse,
     ErrorResponse,
-    FileSearchStoreInfo
+    FileSearchStoreInfo,
+    DataExtractionRequest,
+    DataExtractionResponse,
+    CertificateOfIncorporationData
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -61,6 +64,7 @@ async def health_check():
 @app.post("/upload", response_model=FileUploadResponse)
 async def upload_file(
     file: UploadFile = File(...),
+    store_name: Optional[str] = Form(None),
     settings: Settings = Depends(get_settings)
 ):
     try:
@@ -88,7 +92,7 @@ async def upload_file(
             content = await file.read()
             await buffer.write(content)
         
-        operation_id = await gemini_client.upload_file(str(file_path), file.filename)
+        operation_id = await gemini_client.upload_file(str(file_path), file.filename, store_name)
         
         logger.info(f"File {file.filename} uploaded successfully with ID {file_id}")
         
@@ -96,7 +100,8 @@ async def upload_file(
             success=True,
             message="File uploaded and indexed successfully",
             file_id=file_id,
-            filename=file.filename
+            filename=file.filename,
+            store_name=store_name
         )
         
     except HTTPException:
@@ -150,6 +155,56 @@ async def delete_file_search_store(store_name: str):
     except Exception as e:
         logger.error(f"Error deleting store: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to delete store: {str(e)}")
+
+
+@app.post("/initialize_stores")
+async def initialize_predefined_stores():
+    """Initialize predefined file search stores."""
+    try:
+        predefined_stores = [
+            "Certificate of Incorporation", 
+            "MoA AoA", 
+            "Machine Quotation"
+        ]
+        
+        created_stores = []
+        for store_display_name in predefined_stores:
+            try:
+                store_name = await gemini_client.get_or_create_store(store_display_name)
+                created_stores.append({
+                    "display_name": store_display_name,
+                    "name": store_name
+                })
+            except Exception as e:
+                logger.warning(f"Failed to create store {store_display_name}: {e}")
+        
+        return {"success": True, "stores": created_stores}
+    except Exception as e:
+        logger.error(f"Error initializing stores: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to initialize stores: {str(e)}")
+
+
+@app.post("/extract_data", response_model=DataExtractionResponse)
+async def extract_data(request: DataExtractionRequest):
+    """Extract structured data from documents in a file search store."""
+    try:
+        extracted_data = await gemini_client.extract_structured_data(
+            extraction_type=request.extraction_type,
+            store_name=request.store_name
+        )
+        
+        return DataExtractionResponse(
+            success=True,
+            extraction_type=request.extraction_type,
+            data=extracted_data
+        )
+    except Exception as e:
+        logger.error(f"Error extracting data: {e}")
+        return DataExtractionResponse(
+            success=False,
+            extraction_type=request.extraction_type,
+            error=f"Data extraction failed: {str(e)}"
+        )
 
 
 @app.exception_handler(Exception)
